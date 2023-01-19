@@ -1,6 +1,7 @@
 package az.company.blog.controller;
 
 import az.company.blog.dto.request.ReqCategory;
+import az.company.blog.dto.response.BaseResponse;
 import az.company.blog.dto.response.RespCategory;
 import az.company.blog.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -17,31 +18,28 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("")
-    public ResponseEntity<List<RespCategory>> getAllCategories(){
-        List<RespCategory> categories=categoryService.getAllCategories();
-        return ResponseEntity.ok(categories);
+    public BaseResponse getAllCategories(){
+        return categoryService.getAllCategories();
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<RespCategory> getCategoryById(@PathVariable(name = "categoryId") Long categoryId){
-        return ResponseEntity.ok(categoryService.getCategoryById(categoryId));
+    public BaseResponse getCategoryById(@PathVariable(name = "categoryId") Long categoryId){
+        return categoryService.getCategoryById(categoryId);
     }
 
     @PostMapping("")
-    public ResponseEntity<RespCategory> addCategory(@RequestBody @Valid ReqCategory reqCategory) {
-        RespCategory createdCategory = categoryService.addCategory(reqCategory);
-        return ResponseEntity.ok(createdCategory);
+    public BaseResponse addCategory(@RequestBody @Valid ReqCategory reqCategory) {
+        return categoryService.addCategory(reqCategory);
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<RespCategory> updateCategory(@RequestBody @Valid ReqCategory reqCategory,
+    public BaseResponse updateCategory(@RequestBody @Valid ReqCategory reqCategory,
                                                        @PathVariable(name = "categoryId") Long categoryId) {
-        RespCategory updatedCategory = categoryService.updateCategory(reqCategory, categoryId);
-        return ResponseEntity.ok(updatedCategory);
+        return categoryService.updateCategory(reqCategory,categoryId);
     }
 
     @PutMapping("/delete/{categoryId}")
-    public ResponseEntity<RespCategory> deleteCategory(@PathVariable(name = "categoryId") Long categoryId){
-        return ResponseEntity.ok(categoryService.deleteCategory(categoryId));
+    public BaseResponse deleteCategory(@PathVariable(name = "categoryId") Long categoryId){
+        return categoryService.deleteCategory(categoryId);
     }
 }
