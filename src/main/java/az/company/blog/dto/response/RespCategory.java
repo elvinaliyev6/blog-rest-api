@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RespCategory{
 
+    private Long id;
     private String name;
     private String description;
 

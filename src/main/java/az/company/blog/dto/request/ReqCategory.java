@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Data
@@ -12,8 +12,8 @@ import javax.validation.constraints.Size;
 @Builder
 public class ReqCategory {
 
-    @NotBlank
-    @Size(min = 4,message = "Minimum size of category name must be 4 characters")
+    @NotEmpty
+    @Size(min = 4, message = "Minimum size of category name must be 4 characters")
     private String name;
 
     @Size(min = 15,message = "Minimum size of category must be 4 characters")
