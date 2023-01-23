@@ -1,13 +1,18 @@
 package az.company.blog.service.impl;
 
+import az.company.blog.dto.request.ReqPost;
 import az.company.blog.dto.response.BaseResponse;
 import az.company.blog.dto.response.RespPost;
 import az.company.blog.dto.response.RespStatus;
+import az.company.blog.entity.Category;
 import az.company.blog.entity.Post;
+import az.company.blog.entity.User;
 import az.company.blog.enums.EnumAvailableStatus;
 import az.company.blog.enums.ErrorCodeEnum;
 import az.company.blog.exception.BaseException;
+import az.company.blog.repository.CategoryRepository;
 import az.company.blog.repository.PostRepository;
+import az.company.blog.repository.UserRepository;
 import az.company.blog.service.PostService;
 import az.company.blog.util.DTOConverter;
 import lombok.RequiredArgsConstructor;
@@ -25,19 +30,21 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final DTOConverter converter;
 
     @Override
     public BaseResponse getAllPosts(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         Sort sort;
-        if (sortBy.equalsIgnoreCase("asc")) {
+        if (sortDir.equalsIgnoreCase("asc")) {
             sort = Sort.by(sortBy).ascending();
         } else {
             sort = Sort.by(sortBy).descending();
         }
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
-        Page<Post> page = postRepository.findAllByActive(pageable, EnumAvailableStatus.ACTIVE.getValue());
+        Page<Post> page = postRepository.findAll(pageable);
 
         List<Post> posts = page.getContent();
         List<RespPost> postList = new ArrayList<>();
@@ -57,5 +64,25 @@ public class PostServiceImpl implements PostService {
         response.setData(postList);
         response.setStatus(RespStatus.getSuccessStatus());
         return response;
+    }
+
+    @Override
+    public BaseResponse addPost(ReqPost reqPost, Long userId, Long categoryId) {
+       User user= userRepository
+                .findByIdAndActive(userId,EnumAvailableStatus.ACTIVE.getValue())
+                .orElseThrow(() -> new BaseException(ErrorCodeEnum.USER_NOT_FOUND));
+        Category category=categoryRepository.findByIdAndActive(categoryId,EnumAvailableStatus.ACTIVE.getValue())
+                .orElseThrow(() -> new BaseException(ErrorCodeEnum.CATEGORY_NOT_FOUND));
+
+        Post post=converter.postDTOToPost(reqPost);
+        post.setCategory(category);
+        post.setUser(user);
+        postRepository.save(post);
+//        RespPost respPost=converter.postToPostDTO(post);
+
+        return BaseResponse.builder()
+                .data(converter.postToPostDTO(post))
+                .status(RespStatus.getSuccessStatus())
+                .build();
     }
 }

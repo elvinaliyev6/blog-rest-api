@@ -19,8 +19,6 @@ public class RespPost {
     private RespCategory category;
     private RespUser user;
     private Set<RespComment> comments = new HashSet<>();
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;
