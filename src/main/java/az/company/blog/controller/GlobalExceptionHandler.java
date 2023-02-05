@@ -7,9 +7,9 @@ import az.company.blog.exception.BaseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -33,14 +33,29 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BaseResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
         ex.printStackTrace();
-        RespStatus status=RespStatus.builder()
+        RespStatus status = RespStatus.builder()
                 .code(ErrorCodeEnum.VALIDATION.getCode())
                 .message(ErrorCodeEnum.VALIDATION.getMessage())
                 .build();
-        BaseResponse response=BaseResponse.builder()
+        BaseResponse response = BaseResponse.builder()
                 .data(null)
                 .status(status).build();
         return response;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BaseResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        ex.printStackTrace();
+        RespStatus status = RespStatus
+                .builder()
+                .code(ErrorCodeEnum.INPUT.getCode())
+                .message(ErrorCodeEnum.INPUT.getMessage())
+                .build();
+        return BaseResponse.builder()
+                .data(null)
+                .status(status)
+                .build();
     }
 
     @ExceptionHandler(Exception.class)

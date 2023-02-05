@@ -11,7 +11,8 @@ public enum ErrorCodeEnum {
     EMPTY(405, "Users are not exist yet"),
     USER_NOT_FOUND(406, "User not found"),
     USERNAME_ALREADY_EXISTS(407, "Username or email already exists!"),
-    POST_NOT_FOUND(408,"Post not found!");
+    POST_NOT_FOUND(408,"Post not found!"),
+    INPUT(409,"ID cannot be null and string.Please enter number");
 
     private final int code;
     private final String message;

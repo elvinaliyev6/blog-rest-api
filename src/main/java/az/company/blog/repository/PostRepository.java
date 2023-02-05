@@ -11,14 +11,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post,Long> {
-    List<Post> findByUser(User user);
-    List<Post> findByCategory(Category category);
-
+    List<Post> findByUserAndActive(User user,Integer active);
+    List<Post> findByCategoryAndActive(Category category,Integer active);
     Page<Post> findAllByActive(Pageable pageable,Integer active);
-
     @Query("select p from Post p where p.title like :key")
     List<Post> findByTitleContaining(@Param("key")String title);
+
+    Optional<Post> findByPostIdAndActive(Long postId, Integer active);
 }

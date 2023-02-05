@@ -37,4 +37,24 @@ public class PostController {
         return postService.addPost(reqPost,userId,categoryId);
     }
 
+    @GetMapping("/{postId}")
+    public BaseResponse getPostById(@PathVariable(value = "postId") Long postId){
+        return postService.getPostById(postId);
+    }
+
+    @GetMapping("/user/{userId}")
+    public BaseResponse getPostsByUser(@PathVariable(value = "userId") Long userId) {
+        return postService.getPostsByUser(userId);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public BaseResponse getPostsByCategory(@PathVariable(value = "categoryId") Long categoryId){
+        return postService.getPostsByCategory(categoryId);
+    }
+
+    @PutMapping("/{postId}")
+    public BaseResponse updatePost(@RequestBody @Valid ReqPost reqPost,@PathVariable("postId") Long postId){
+        return postService.updatePost(reqPost,postId);
+    }
+
 }
