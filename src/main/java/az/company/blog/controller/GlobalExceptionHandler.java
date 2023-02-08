@@ -4,6 +4,7 @@ import az.company.blog.dto.response.BaseResponse;
 import az.company.blog.dto.response.RespStatus;
 import az.company.blog.enums.ErrorCodeEnum;
 import az.company.blog.exception.BaseException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,6 +56,21 @@ public class GlobalExceptionHandler {
         return BaseResponse.builder()
                 .data(null)
                 .status(status)
+                .build();
+    }
+
+
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)  // 409
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public BaseResponse conflict(DataIntegrityViolationException e) {
+        e.printStackTrace();
+        RespStatus status=RespStatus.builder()
+                .code(ErrorCodeEnum.VALIDATION.getCode())
+                .message(ErrorCodeEnum.VALIDATION.getMessage())
+                .build();
+        return BaseResponse.builder()
+                .status(status)
+                .data(null)
                 .build();
     }
 

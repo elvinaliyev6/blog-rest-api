@@ -1,12 +1,15 @@
 package az.company.blog.util;
 
 import az.company.blog.dto.request.ReqCategory;
+import az.company.blog.dto.request.ReqComment;
 import az.company.blog.dto.request.ReqPost;
 import az.company.blog.dto.request.ReqUser;
 import az.company.blog.dto.response.RespCategory;
+import az.company.blog.dto.response.RespComment;
 import az.company.blog.dto.response.RespPost;
 import az.company.blog.dto.response.RespUser;
 import az.company.blog.entity.Category;
+import az.company.blog.entity.Comment;
 import az.company.blog.entity.Post;
 import az.company.blog.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +43,14 @@ public class DTOConverter {
     }
 
     public RespPost postToPostDTO(Post post) {
-        return modelMapper.map(post,RespPost.class);
+        return modelMapper.map(post, RespPost.class);
     }
 
+    public Comment commentDTOToComment(ReqComment comment) {
+        return modelMapper.map(comment, Comment.class);
+    }
+
+    public RespComment commentToCommentDTO(Comment comment) {
+        return modelMapper.map(comment, RespComment.class);
+    }
 }

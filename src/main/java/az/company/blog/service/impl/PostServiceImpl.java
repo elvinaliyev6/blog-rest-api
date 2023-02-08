@@ -1,10 +1,7 @@
 package az.company.blog.service.impl;
 
 import az.company.blog.dto.request.ReqPost;
-import az.company.blog.dto.response.BaseResponse;
-import az.company.blog.dto.response.RespPost;
-import az.company.blog.dto.response.RespStatus;
-import az.company.blog.dto.response.RespUser;
+import az.company.blog.dto.response.*;
 import az.company.blog.entity.Category;
 import az.company.blog.entity.Post;
 import az.company.blog.entity.User;
@@ -25,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,15 +47,19 @@ public class PostServiceImpl implements PostService {
         Page<Post> page = postRepository.findAllByActive(pageable, EnumAvailableStatus.ACTIVE.getValue());
 
         List<Post> posts = page.getContent();
-        List<RespPost> postList = new ArrayList<>();
+        List<PageableRespPost> postList = new ArrayList<>();
+
         for (Post post : posts) {
+            PageableRespPost pageableRespPost = new PageableRespPost();
             RespPost respPost = converter.postToPostDTO(post);
-            respPost.setLastPage(page.isLast());
-            respPost.setPageNumber(page.getNumber());
-            respPost.setPageSize(page.getSize());
-            respPost.setTotalPages(page.getTotalPages());
-            respPost.setTotalElements(page.getTotalElements());
-            postList.add(respPost);
+            System.out.println(respPost);
+            pageableRespPost.setRespPost(respPost);
+            pageableRespPost.setLastPage(page.isLast());
+            pageableRespPost.setPageNumber(page.getNumber());
+            pageableRespPost.setPageSize(page.getSize());
+            pageableRespPost.setTotalPages(page.getTotalPages());
+            pageableRespPost.setTotalElements(page.getTotalElements());
+            postList.add(pageableRespPost);
         }
         if (postList.isEmpty() || postList == null) {
             throw new BaseException(ErrorCodeEnum.POST_NOT_FOUND);
@@ -70,17 +72,22 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public BaseResponse addPost(ReqPost reqPost, Long userId, Long categoryId) {
-       User user= userRepository
-                .findByIdAndActive(userId,EnumAvailableStatus.ACTIVE.getValue())
+        User user = userRepository
+                .findByIdAndActive(userId, EnumAvailableStatus.ACTIVE.getValue())
                 .orElseThrow(() -> new BaseException(ErrorCodeEnum.USER_NOT_FOUND));
-        Category category=categoryRepository.findByIdAndActive(categoryId,EnumAvailableStatus.ACTIVE.getValue())
+        Category category = categoryRepository.findByIdAndActive(categoryId, EnumAvailableStatus.ACTIVE.getValue())
                 .orElseThrow(() -> new BaseException(ErrorCodeEnum.CATEGORY_NOT_FOUND));
 
-        Post post=converter.postDTOToPost(reqPost);
+        Post post = converter.postDTOToPost(reqPost);
         post.setCategory(category);
         post.setUser(user);
-        postRepository.save(post);
-//        RespPost respPost=converter.postToPostDTO(post);
+        Post savedPost = postRepository.save(post);
+        RespPost respPost = converter.postToPostDTO(savedPost);
+        respPost.setCategory(converter.categoryToCategoryDTO(category));
+        Set<RespComment> comments = savedPost.getComments()
+                .stream().map(comment -> converter.commentToCommentDTO(comment))
+                .collect(Collectors.toSet());
+        respPost.setComments(comments);
 
         return BaseResponse.builder()
                 .data(converter.postToPostDTO(post))
@@ -116,11 +123,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public BaseResponse getPostsByCategory(Long categoryId) {
-        Category category=categoryRepository.findByIdAndActive(categoryId,EnumAvailableStatus.ACTIVE.getValue())
+        Category category = categoryRepository.findByIdAndActive(categoryId, EnumAvailableStatus.ACTIVE.getValue())
                 .orElseThrow(() -> new BaseException(ErrorCodeEnum.CATEGORY_NOT_FOUND));
 
-        List<RespPost> posts=postRepository
-                .findByCategoryAndActive(category,EnumAvailableStatus.ACTIVE.getValue())
+        List<RespPost> posts = postRepository
+                .findByCategoryAndActive(category, EnumAvailableStatus.ACTIVE.getValue())
                 .stream().map(converter::postToPostDTO)
                 .collect(Collectors.toList());
 
@@ -132,21 +139,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public BaseResponse updatePost(ReqPost reqPost, Long postId) {
-        Post post=postRepository.findByPostIdAndActive(postId,EnumAvailableStatus.ACTIVE.getValue())
+        Post post = postRepository.findByPostIdAndActive(postId, EnumAvailableStatus.ACTIVE.getValue())
                 .orElseThrow(() -> new BaseException(ErrorCodeEnum.POST_NOT_FOUND));
-            User user=userRepository.findByIdAndActive(reqPost.getUserId(), EnumAvailableStatus.ACTIVE.getValue())
-                    .orElseThrow(() -> new BaseException(ErrorCodeEnum.USER_NOT_FOUND));
-            Category category=categoryRepository.findByIdAndActive(reqPost.getCategoryId(), EnumAvailableStatus.ACTIVE.getValue())
-                    .orElseThrow(() -> new BaseException(ErrorCodeEnum.CATEGORY_NOT_FOUND));
-            post.setUser(user);
-            post.setCategory(category);
-            post.setContent(reqPost.getContent());
-            post.setTitle(reqPost.getTitle());
+        post.setContent(reqPost.getContent());
+        post.setTitle(reqPost.getTitle());
 
-            RespPost respPost=converter.postToPostDTO(post);
-            return BaseResponse
-                    .builder().data(respPost)
-                    .status(RespStatus.getSuccessStatus())
-                    .build();
+        RespPost respPost = converter.postToPostDTO(post);
+        return BaseResponse
+                .builder().data(respPost)
+                .status(RespStatus.getSuccessStatus())
+                .build();
     }
 }

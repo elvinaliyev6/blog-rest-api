@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(
-        name = "posts", uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})}
-)
+@Table( name = "posts")
 @DynamicInsert
+@Builder
 public class Post {
 
     @Id
@@ -27,7 +27,7 @@ public class Post {
     )
     private Long postId;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false,unique = true)
     private String title;
 
     @Column(name = "content", nullable = false)
