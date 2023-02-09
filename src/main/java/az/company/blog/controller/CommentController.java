@@ -26,4 +26,23 @@ public class CommentController {
         return commentService.getCommentsByPostId(postId);
     }
 
+    @GetMapping("/posts/{postId}/comments/{id}")
+    public BaseResponse getCommentById(@PathVariable Long postId,
+                                       @PathVariable Long id){
+       return commentService.getCommentById(postId,id);
+    }
+
+    @PutMapping("/posts/{postId}/comments/{id}")
+    public BaseResponse updateComment(@PathVariable Long postId,
+                                      @PathVariable Long id,
+                                      @RequestBody @Valid ReqComment reqComment){
+        return commentService.updateComment(postId,id,reqComment);
+    }
+
+    @PutMapping("/delete/posts/{postId}/comments/{id}")
+    public BaseResponse deleteComment(@PathVariable Long postId,
+                        @PathVariable Long id){
+        return commentService.deleteComment(postId,id);
+    }
+
 }
