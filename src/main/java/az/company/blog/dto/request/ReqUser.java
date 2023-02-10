@@ -18,10 +18,6 @@ public class ReqUser {
     @Size(min = 4,message = "Name must contain at least 4 characters")
     private String name;
 
-    @NotEmpty
-    @Size(min = 4,message = "Username must contain at least 4 characters")
-    private String username;
-
     @Email(message = "Email address is not valid!")
     private String email;
     @NotEmpty

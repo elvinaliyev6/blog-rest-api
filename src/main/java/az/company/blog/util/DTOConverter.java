@@ -14,12 +14,15 @@ import az.company.blog.entity.Post;
 import az.company.blog.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class DTOConverter {
     private final ModelMapper modelMapper;
+
+
 
     public RespCategory categoryToCategoryDTO(Category category) {
         return modelMapper.map(category, RespCategory.class);

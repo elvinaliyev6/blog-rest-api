@@ -27,10 +27,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseResponse createUser(ReqUser reqUser) {
         String email = reqUser.getEmail();
-        String username = reqUser.getUsername();
 
-        if (userRepository.findByEmailAndActive(email, EnumAvailableStatus.ACTIVE.getValue()).isPresent()
-                || userRepository.findByUsernameAndActive(username, EnumAvailableStatus.ACTIVE.getValue()).isPresent()) {
+        if (userRepository.findByEmailAndActive(email, EnumAvailableStatus.ACTIVE.getValue()).isPresent()) {
             throw new BaseException(ErrorCodeEnum.USERNAME_ALREADY_EXISTS);
         }
 
@@ -64,17 +62,14 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BaseException(ErrorCodeEnum.USER_NOT_FOUND));
 
         String email = reqUser.getEmail();
-        String username = reqUser.getUsername();
 
-        if (userRepository.findByEmailAndActive(email, EnumAvailableStatus.ACTIVE.getValue()).isPresent()
-                || userRepository.findByUsernameAndActive(username, EnumAvailableStatus.ACTIVE.getValue()).isPresent()) {
+        if (userRepository.findByEmailAndActive(email, EnumAvailableStatus.ACTIVE.getValue()).isPresent()) {
             throw new BaseException(ErrorCodeEnum.USERNAME_ALREADY_EXISTS);
         }
 
         user.setName(reqUser.getName());
         user.setEmail(reqUser.getEmail());
         user.setPassword(reqUser.getPassword());
-        user.setUsername(reqUser.getUsername());
         User updatedUser = userRepository.save(user);
         RespUser respUser = converter.userToUserDTO(updatedUser);
         return BaseResponse.builder()
