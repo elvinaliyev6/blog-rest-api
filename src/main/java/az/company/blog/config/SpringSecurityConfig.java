@@ -18,11 +18,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication().withUser("Elvin")
-                .password("12345")
+                .password("$2a$10$rLGANu3giiftD1SNuoXk9O0j8IdmZU1WTnWeZNAiwStZEI8N8SI12")
                 .roles("ADMIN")
                 .and()
                 .withUser("Test")
-                .password("test")
+                .password("$2a$10$4y8objgQzCYodOCzQAe3/O9KS5E.xVzeMWi9.IOhOalxuI5CfTW3C")
                 .roles("USER");
     }
 
